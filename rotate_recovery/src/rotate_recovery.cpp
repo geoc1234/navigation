@@ -71,8 +71,8 @@ void RotateRecovery::initialize(std::string name, tf2_ros::Buffer*,
     private_nh.param("frequency", frequency_, 20.0);
 
     acc_lim_th_ = nav_core::loadParameterWithDeprecation(blp_nh, "acc_lim_theta", "acc_lim_th", 3.2);
-    max_rotational_vel_ = nav_core::loadParameterWithDeprecation(blp_nh, "max_vel_theta", "max_rotational_vel", 1.0);
-    min_rotational_vel_ = nav_core::loadParameterWithDeprecation(blp_nh, "min_in_place_vel_theta", "min_in_place_rotational_vel", 0.4);
+    max_rotational_vel_ = nav_core::loadParameterWithDeprecation(blp_nh, "max_vel_theta", "max_rotational_vel", 0.4);
+    min_rotational_vel_ = nav_core::loadParameterWithDeprecation(blp_nh, "min_in_place_vel_theta", "min_in_place_rotational_vel", 0.0);
     blp_nh.param("yaw_goal_tolerance", tolerance_, 0.10);
 
     world_model_ = new base_local_planner::CostmapModel(*local_costmap_->getCostmap());
@@ -130,8 +130,8 @@ void RotateRecovery::runBehavior()
     if (!got_180)
     {
       // If we haven't hit 180 yet, we need to rotate a half circle plus the distance to the 180 point
-      double distance_to_180 = std::fabs(angles::shortest_angular_distance(current_angle, start_angle + M_PI));
-      dist_left = M_PI + distance_to_180;
+      double distance_to_180 = std::fabs(angles::shortest_angular_distance(current_angle, start_angle + M_PI/4.0));
+      dist_left = distance_to_180;
 
       if (distance_to_180 < tolerance_)
       {
@@ -154,7 +154,7 @@ void RotateRecovery::runBehavior()
 
       // make sure that the point is legal, if it isn't... we'll abort
       double footprint_cost = world_model_->footprintCost(x, y, theta, local_costmap_->getRobotFootprint(), 0.0, 0.0);
-      if (footprint_cost < 0.0)
+      if (footprint_cost < -1.0)
       {
         ROS_ERROR("Rotate recovery can't rotate in place because there is a potential collision. Cost: %.2f",
                   footprint_cost);

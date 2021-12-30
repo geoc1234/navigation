@@ -59,14 +59,14 @@ namespace move_slow_and_clear
 
     ros::NodeHandle private_nh_("~/" + n);
     private_nh_.param("clearing_distance", clearing_distance_, 0.5);
-    private_nh_.param("limited_trans_speed", limited_trans_speed_, 0.25);
-    private_nh_.param("limited_rot_speed", limited_rot_speed_, 0.45);
+    private_nh_.param("limited_trans_speed", limited_trans_speed_, 0.04);
+    private_nh_.param("limited_rot_speed", limited_rot_speed_, 0.8);
     private_nh_.param("limited_distance", limited_distance_, 0.3);
     private_nh_.param("max_trans_param_name", max_trans_param_name_, std::string("max_trans_vel"));
     private_nh_.param("max_rot_param_name", max_rot_param_name_, std::string("max_rot_vel"));
 
     std::string planner_namespace;
-    private_nh_.param("planner_namespace", planner_namespace, std::string("DWAPlannerROS"));
+    private_nh_.param("planner_namespace", planner_namespace, std::string("TebLocalPlannerROS"));
     planner_nh_ = ros::NodeHandle("~/" + planner_namespace);
     planner_dynamic_reconfigure_service_ = planner_nh_.serviceClient<dynamic_reconfigure::Reconfigure>("set_parameters", true);
     initialized_ = true;
